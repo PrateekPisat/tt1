@@ -1,22 +1,26 @@
-<h2>Show Post</h2>
+<h2>Show Task</h2>
+<div class="row">
+  <ul>
+    <li>
+      <strong>Task Name:</strong>
+      <%= @post.taskname %>
+    </li>
 
-<ul>
+    <li>
+      <strong>Is the task complete:</strong>
+      <%= @post.completed %>
+    </li>
 
-  <li>
-    <strong>Taskname:</strong>
-    <%= @post.taskname %>
-  </li>
+    <li>
+      <strong>Time Spent:</strong>
+      <%= @post.hoursspent %> minutes.
+    </li>
 
-  <li>
-    <strong>Completed:</strong>
-    <%= @post.completed %>
-  </li>
+    <li>
+      <strong>Discription:</strong>
+      <%= @post.body %>
+    </li>
 
-  <li>
-    <strong>Hoursspent:</strong>
-    <%= @post.hoursspent %>
-  </li>
-
-</ul>
-
-<span><%= link "Edit", to: post_path(@conn, :edit, @post) %></span>
+  </ul>
+</div>
+<span><%= link "Back", to: user_path(@conn, :show, @current_user) %></span>

@@ -3,9 +3,9 @@ defmodule Tt1Web.PostControllerTest do
 
   alias Tt1.Social
 
-  @create_attrs %{completed: true, hoursspent: 42, taskname: "some taskname"}
-  @update_attrs %{completed: false, hoursspent: 43, taskname: "some updated taskname"}
-  @invalid_attrs %{completed: nil, hoursspent: nil, taskname: nil}
+  @create_attrs %{body: "some body", completed: true, hoursspent: 42, taskname: "some taskname"}
+  @update_attrs %{body: "some updated body", completed: false, hoursspent: 43, taskname: "some updated taskname"}
+  @invalid_attrs %{body: nil, completed: nil, hoursspent: nil, taskname: nil}
 
   def fixture(:post) do
     {:ok, post} = Social.create_post(@create_attrs)
@@ -60,7 +60,7 @@ defmodule Tt1Web.PostControllerTest do
       assert redirected_to(conn) == post_path(conn, :show, post)
 
       conn = get conn, post_path(conn, :show, post)
-      assert html_response(conn, 200) =~ "some updated taskname"
+      assert html_response(conn, 200) =~ "some updated body"
     end
 
     test "renders errors when data is invalid", %{conn: conn, post: post} do

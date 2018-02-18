@@ -3,7 +3,7 @@ defmodule Tt1.Repo.Migrations.CreatePosts do
 
   def change do
     create table(:posts) do
-      add :taskname, :string, null: false
+      add :taskname, :string
       add :completed, :boolean, default: false, null: false
       add :hoursspent, :integer
       add :body, :text

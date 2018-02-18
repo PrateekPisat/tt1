@@ -20,24 +20,37 @@ defmodule Tt1Web.PostController do
   def create(conn, %{"post" => post_params}) do
     user = Accounts.get_user!(get_session(conn, :user_id))
     users = Accounts.list_users
-    err = try do
-      post_user = Accounts.get_user!(post_params["user_id"])
-      case Social.create_post(post_params) do
-        {:ok, post} ->
+    cond do
+      String.to_integer(post_params["hoursspent"]) >= 15 &&
+         rem(String.to_integer(post_params["hoursspent"]), 15) == 0 ->
+      err = try do
+        post_user = Accounts.get_user!(post_params["user_id"])
+        case Social.create_post(post_params) do
+          {:ok, post} ->
+            conn
+            |> put_flash(:info, "Task assigned to #{post_user.name}.")
+            |> redirect(to: user_path(conn, :show, user))
+          {:error, %Ecto.Changeset{} = changeset} ->
+            render(conn, "new.html", changeset: changeset, users: users)
+        end
+        rescue
+        Ecto.NoResultsError ->
+          changeset = Social.change_post(%Post{})
           conn
-          |> put_flash(:info, "Task assigned to #{user.name}.")
-          |> redirect(to: user_path(conn, :show, user))
-        {:error, %Ecto.Changeset{} = changeset} ->
-          render(conn, "new.html", changeset: changeset, users: users)
+          |> put_flash(:error, "Please select a User_id from the list mentioned in the page.")
+          |> render("new.html", users: users, changeset: changeset)
       end
-      rescue
-      Ecto.NoResultsError ->
+      String.to_integer(post_params["hoursspent"]) < 0 ->
         changeset = Social.change_post(%Post{})
         conn
-        |> put_flash(:error, "Please select a User_id for the list mentioned in the page.")
+        |> put_flash(:error, "Time can't be negative.")
         |> render("new.html", users: users, changeset: changeset)
-    end
-
+      true ->
+        changeset = Social.change_post(%Post{})
+        conn
+        |> put_flash(:error, "Time Spent should be in intervals of 15.")
+        |> render("new.html", users: users, changeset: changeset)
+      end
   end
 
   def show(conn, %{"id" => id}) do
@@ -64,7 +77,7 @@ defmodule Tt1Web.PostController do
       case Social.update_post(post, post_params) do
         {:ok, post} ->
           conn
-          |> put_flash(:info, "Post updated successfully.")
+          |> put_flash(:info, "Task updated successfully.")
           |> redirect(to: user_path(conn, :show, user))
         {:error, %Ecto.Changeset{} = changeset} ->
           render(conn, "edit.html", post: post, changeset: changeset)
@@ -82,7 +95,7 @@ defmodule Tt1Web.PostController do
     {:ok, _post} = Social.delete_post(post)
 
     conn
-    |> put_flash(:info, "Post deleted successfully.")
+    |> put_flash(:info, "Task deleted successfully.")
     |> redirect(to: user_path(conn, :show, user))
   end
 end

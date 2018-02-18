@@ -7,17 +7,23 @@
 
   <div class="form-group">
     Enter User Id:<br>
-    <%= text_input f, :user_id, class: "form-control", required: :true%> &nbsp; <a href="#1">See availabe user-id</a>
-    <div class="invalid-feedback">
-          Please choose a username.
-        </div>
+    <%= text_input f, :user_id, class: "form-control", required: :true%> &nbsp;
     <%= error_tag f, :user_id %>
+    <small id="timeHelpBlock" class="form-text text-muted">
+      See List of Availabe User-IDs at the botton of the Page.
+    </small>
   </div>
 
   <div class="form-group">
     Enter Task name:
     <%= text_input f, :taskname, class: "form-control" %>
     <%= error_tag f, :taskname %>
+  </div>
+
+  <div class="form-group">
+    Describe Your Task:
+    <%= textarea f, :body, class: "form-control" %>
+    <%= error_tag f, :body %>
   </div>
 
   <div class="form-group">
@@ -44,17 +50,17 @@
       <thead>
         <tr>
           <th>User-Id</th>
-          <th>Email</th>
           <th>Name</th>
 
           <th></th>
         </tr>
       </thead>
       <tbody>
+        List of availabe Users along with their IDs
+        <div class="row">
     <%= for user <- @users do %>
         <tr>
           <td><%= user.id %></td>
-          <td><%= user.email %></td>
           <td><%= user.name %></td>
 
           <td class="text-right">
@@ -66,6 +72,7 @@
           </td>
         </tr>
     <% end %>
+  </div>
       </tbody>
     </table>
 
