@@ -14,7 +14,7 @@
 
   <div class="form-group">
     Enter Task name:
-    <%= text_input f, :taskname, class: "form-control" %>
+    <%= text_input f, :taskname, class: "form-control", required: :true %>
     <%= error_tag f, :taskname %>
   </div>
 
@@ -26,7 +26,7 @@
 
   <div class="form-group">
     Time Spent of this task:
-    <%= number_input f, :hoursspent, class: "form-control", placeholder: "Enter time in minutes"%>
+    <%= number_input f, :hoursspent, class: "form-control", placeholder: "Enter time in minutes", required: :true%>
     <%= error_tag f, :hoursspent %>
     <small id="timeHelpBlock" class="form-text text-muted">
       Time Spent must be entered in minutes, and in increments of 15 minutes.

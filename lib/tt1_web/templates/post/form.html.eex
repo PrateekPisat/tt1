@@ -7,7 +7,7 @@
 
   <div class="form-group">
     Enter User Id:<br>
-    <%= text_input f, :user_id, class: "form-control", required: :true%> &nbsp;
+    <%= number_input f, :user_id, class: "form-control", required: :true%>
     <%= error_tag f, :user_id %>
     <small id="timeHelpBlock" class="form-text text-muted">
       See List of Availabe User-IDs at the botton of the Page.
@@ -16,13 +16,13 @@
 
   <div class="form-group">
     Enter Task name:
-    <%= text_input f, :taskname, class: "form-control" %>
+    <%= text_input f, :taskname, class: "form-control", required: :true %>
     <%= error_tag f, :taskname %>
   </div>
 
   <div class="form-group">
     Describe Your Task:
-    <%= textarea f, :body, class: "form-control" %>
+    <%= textarea f, :body, class: "form-control", required: :true %>
     <%= error_tag f, :body %>
   </div>
 
@@ -34,7 +34,7 @@
 
   <div class="form-group">
     Time Spent of this task:
-    <%= number_input f, :hoursspent, class: "form-control", placeholder: "Enter time in minutes"%>
+    <%= number_input f, :hoursspent, class: "form-control", placeholder: "Enter time in minutes", required: :true%>
     <%= error_tag f, :hoursspent %>
     <small id="timeHelpBlock" class="form-text text-muted">
       Time Spent must be entered in minutes, and in increments of 15 minutes.
