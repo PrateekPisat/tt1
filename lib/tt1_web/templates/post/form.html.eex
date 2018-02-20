@@ -7,12 +7,8 @@
 
   <div class="form-group">
     Enter User Id:<br>
-    <%= number_input f, :user_id, class: "form-control", required: :true%>
-    <%= error_tag f, :user_id %>
-    <small id="timeHelpBlock" class="form-text text-muted">
-      See List of Availabe User-IDs at the botton of the Page.
-    </small>
-  </div>
+
+    <%= select f, :user_id, Enum.map(@users, &{&1.name, &1.id})%>
 
   <div class="form-group">
     Enter Task name:

@@ -1,6 +1,7 @@
 defmodule Tt1Web.SessionController do
   use Tt1Web, :controller
 
+
   def create(conn, %{"name" => name}) do
     if name == "" || name == " " do
       conn
@@ -27,4 +28,5 @@ end
     |> put_flash(:info, "Logged Out")
     |> redirect(to: "/")
 end
+
 end
