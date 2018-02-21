@@ -8,6 +8,7 @@
   <% end %>
 
   <div class="form-group">
+    Select User:
     <%= select f, :user_id, Enum.map(@users, &{&1.name, &1.id})%>
   </div>
 

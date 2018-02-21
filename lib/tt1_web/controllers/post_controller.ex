@@ -14,7 +14,7 @@ defmodule Tt1Web.PostController do
   def new(conn, _params) do
     users = Accounts.list_users
     changeset = Social.change_post(%Post{})
-    render(conn, "new.html", changeset: changeset, users: users)
+    render(conn, "new.html", changeset: changeset, users: users, current_user: user = Tt1.Accounts.get_user!(get_session(conn, :user_id)))
   end
 
   def create(conn, %{"post" => post_params}) do
@@ -31,32 +31,32 @@ defmodule Tt1Web.PostController do
             |> put_flash(:info, "Task assigned to #{post_user.name}.")
             |> redirect(to: user_path(conn, :show, user))
           {:error, %Ecto.Changeset{} = changeset} ->
-            render(conn, "new.html", changeset: changeset, users: users)
+            render(conn, "new.html", changeset: changeset, users: users, current_user: user = Tt1.Accounts.get_user!(get_session(conn, :user_id)))
         end
         rescue
         Ecto.NoResultsError ->
           changeset = Social.change_post(%Post{})
           conn
           |> put_flash(:error, "Please select a User_id from the list mentioned in the page.")
-          |> render("new.html", users: users, changeset: changeset)
+          |> render("new.html", users: users, changeset: changeset, current_user: user = Tt1.Accounts.get_user!(get_session(conn, :user_id)))
       end
       String.to_integer(post_params["hoursspent"]) < 0 ->
         changeset = Social.change_post(%Post{})
         conn
         |> put_flash(:error, "Time can't be negative.")
-        |> render("new.html", users: users, changeset: changeset)
+        |> render("new.html", users: users, changeset: changeset, current_user: user = Tt1.Accounts.get_user!(get_session(conn, :user_id)))
       true ->
         changeset = Social.change_post(%Post{})
         conn
         |> put_flash(:error, "Time Spent should be in intervals of 15.")
-        |> render("new.html", users: users, changeset: changeset)
+        |> render("new.html", users: users, changeset: changeset, current_user: user = Tt1.Accounts.get_user!(get_session(conn, :user_id)))
       end
   end
 
   def show(conn, %{"id" => id}) do
     post = Social.get_post!(id)
     user = Accounts.get_user!(post.user_id)
-    render(conn, "show.html", post: post, user: user)
+    render(conn, "show.html", post: post, user: user, current_user: user = Tt1.Accounts.get_user!(get_session(conn, :user_id)))
   end
 
   def edit(conn, %{"id" => id}) do

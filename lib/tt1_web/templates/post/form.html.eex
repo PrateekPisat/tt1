@@ -6,7 +6,7 @@
   <% end %>
 
   <div class="form-group">
-    Enter User Id:<br>
+    Select User :<br>
 
     <%= select f, :user_id, Enum.map(@users, &{&1.name, &1.id})%>
 
@@ -39,38 +39,5 @@
 
   <div class="form-group">
     <%= submit "Submit", class: "btn btn-primary" %>
-  </div>
-
-  <div id="1">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>User-Id</th>
-          <th>Name</th>
-
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        List of availabe Users along with their IDs
-        <div class="row">
-    <%= for user <- @users do %>
-        <tr>
-          <td><%= user.id %></td>
-          <td><%= user.name %></td>
-
-          <td class="text-right">
-            <!--
-            <span><%= link "Show", to: user_path(@conn, :show, user), class: "btn btn-default btn-xs" %></span>
-            <span><%= link "Edit", to: user_path(@conn, :edit, user), class: "btn btn-default btn-xs" %></span>
-            <span><%= link "Delete", to: user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-          -->
-          </td>
-        </tr>
-    <% end %>
-  </div>
-      </tbody>
-    </table>
-
   </div>
 <% end %>
