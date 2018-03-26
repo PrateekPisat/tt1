@@ -17,7 +17,7 @@ defmodule Tt1.Social.Post do
   @doc false
   def changeset(%Post{} = post, attrs) do
     post
-    |> cast(attrs, [:taskname, :completed, :hoursspent, :body, :user_id])
-    |> validate_required([:taskname, :completed, :hoursspent, :body, :user_id])
+    |> cast(attrs, [:taskname, :completed, :hoursspent, :body])
+    |> validate_required([:taskname, :completed, :hoursspent, :body])
   end
 end

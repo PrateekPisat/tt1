@@ -31,7 +31,7 @@ defmodule Tt1.Accounts do
 
   def get_user_by_name(name) do
     query = from u in User, where: u.name == ^name
-    Repo.all(query)
+    Repo.one(query)
   end
 
   @doc """
@@ -83,4 +83,5 @@ defmodule Tt1.Accounts do
   def change_user(%User{} = user) do
     User.changeset(user, %{})
   end
+
 end

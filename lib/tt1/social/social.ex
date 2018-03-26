@@ -7,6 +7,7 @@ defmodule Tt1.Social do
   alias Tt1.Repo
 
   alias Tt1.Social.Post
+  alias Tt1.Accounts.Manage
 
   @doc """
   Returns the list of posts.

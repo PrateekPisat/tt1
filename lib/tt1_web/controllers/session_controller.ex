@@ -1,25 +1,26 @@
 defmodule Tt1Web.SessionController do
   use Tt1Web, :controller
+  alias Tt1.Accounts
 
 
-  def create(conn, %{"name" => name}) do
-    if name == "" || name == " " do
-      conn
-      |> put_flash(:error, "Invalid Username")
-      |> redirect(to: "/")
-    else
-      user = Tt1.Accounts.get_user_by_name(name)
-      if length(user) == 1 do
-        conn
-        |> put_session(:user_id, Enum.fetch!(user, 0).id)
-        |> put_flash(:info, "Welcome Back #{Enum.fetch!(user, 0).name}")
-        |> redirect(to: user_path(conn, :show, Enum.fetch!(user, 0)))
+  def create(conn, %{"name" => name, "password" => pass}) do
+      user = Accounts.get_user_by_name(name)
+      if user do
+        if auth_user(user, pass) do
+          conn
+          |> put_session(:user_id, user.id)
+          |> put_flash(:info, "Welcome Back #{user.name}")
+          |> redirect(to: user_path(conn, :show, user))
+        else
+          conn
+          |> put_flash(:error, "Invalid Username or Password")
+          |> redirect(to: "/")
+        end
       else
         conn
-        |> put_flash(:error, "Invalid Username")
+        |> put_flash(:error, "Invalid Username or Password")
         |> redirect(to: "/")
       end
-    end
 end
 
   def delete(conn, _) do
@@ -28,5 +29,12 @@ end
     |> put_flash(:info, "Logged Out")
     |> redirect(to: "/")
 end
+
+def auth_user(user, password) do
+    case Comeonin.Argon2.check_pass(user, password) do
+      {:ok, user} -> user
+      _else       -> nil
+    end
+  end
 
 end

@@ -32,6 +32,8 @@ defmodule Tt1Web.Router do
     resources "/posts", PostController
     post "/session", SessionController, :create
     delete "/session", SessionController, :delete
+    resources "/manages", ManageController
+    resources "/blocks", BlockController
   end
 
   # Other scopes may use custom stacks.
