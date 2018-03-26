@@ -12,7 +12,19 @@
 // If you no longer want to use a dependency, remember
 // to also remove its path from "config.paths.watched".
 import "phoenix_html"
+import run_demo from "./demo";
 
+function start()
+{
+	let root = document.getElementById('root');
+	if(root)
+	{
+  		run_demo();
+  }
+}
+
+// Use jQuery to delay until page loaded.
+$(start());
 // Import local files
 //
 // Local files can be imported directly using relative

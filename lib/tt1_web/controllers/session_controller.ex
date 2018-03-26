@@ -10,7 +10,7 @@ defmodule Tt1Web.SessionController do
           conn
           |> put_session(:user_id, user.id)
           |> put_flash(:info, "Welcome Back #{user.name}")
-          |> redirect(to: user_path(conn, :show, user))
+          |> redirect( to: "/users/show/" <> to_string(user.id))
         else
           conn
           |> put_flash(:error, "Invalid Username or Password")

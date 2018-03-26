@@ -28,16 +28,15 @@ defmodule Tt1Web.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    resources "/users", UserController
-    resources "/posts", PostController
     post "/session", SessionController, :create
     delete "/session", SessionController, :delete
-    resources "/manages", ManageController
-    resources "/blocks", BlockController
+
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", Tt1Web do
-  #   pipe_through :api
-  # end
+   scope "/api/v1/", Tt1Web do
+     pipe_through :api
+
+     resources "/users", UserController, except: [:new, :edit]
+   end
 end
