@@ -14,6 +14,6 @@ defmodule Tt1Web.UserView do
     %{id: user.id,
       name: user.name,
       email: user.email,
-      pasword_hash: user.pasword_hash}
+      password_hash: user.password_hash}
   end
 end

@@ -4,9 +4,9 @@ defmodule Tt1Web.UserControllerTest do
   alias Tt1.Accounts
   alias Tt1.Accounts.User
 
-  @create_attrs %{email: "some email", name: "some name", pasword_hash: "some pasword_hash"}
-  @update_attrs %{email: "some updated email", name: "some updated name", pasword_hash: "some updated pasword_hash"}
-  @invalid_attrs %{email: nil, name: nil, pasword_hash: nil}
+  @create_attrs %{email: "some email", name: "some name", password_hash: "some password_hash"}
+  @update_attrs %{email: "some updated email", name: "some updated name", password_hash: "some updated password_hash"}
+  @invalid_attrs %{email: nil, name: nil, password_hash: nil}
 
   def fixture(:user) do
     {:ok, user} = Accounts.create_user(@create_attrs)
@@ -34,7 +34,7 @@ defmodule Tt1Web.UserControllerTest do
         "id" => id,
         "email" => "some email",
         "name" => "some name",
-        "pasword_hash" => "some pasword_hash"}
+        "password_hash" => "some password_hash"}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -55,7 +55,7 @@ defmodule Tt1Web.UserControllerTest do
         "id" => id,
         "email" => "some updated email",
         "name" => "some updated name",
-        "pasword_hash" => "some updated pasword_hash"}
+        "password_hash" => "some updated password_hash"}
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do

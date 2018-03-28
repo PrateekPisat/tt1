@@ -19,7 +19,7 @@ function start()
 	let root = document.getElementById('root');
 	if(root)
 	{
-  		run_demo();
+  		run_demo(root);
   }
 }
 

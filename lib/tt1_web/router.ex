@@ -6,8 +6,8 @@ defmodule Tt1Web.Router do
     plug :fetch_session
     plug :fetch_flash
     #plug :fetch_current_user
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    #plug :protect_from_forgery
+    #plug :put_secure_browser_headers
   end
 
   pipeline :api do
@@ -30,6 +30,10 @@ defmodule Tt1Web.Router do
     get "/", PageController, :index
     post "/session", SessionController, :create
     delete "/session", SessionController, :delete
+    get "/session", SessionController, :delete
+    get "/users/new", PageController, :index
+    get "users/show/:id", PageController, :index
+    get "users/edit/:id", PageController, :index
 
   end
 
