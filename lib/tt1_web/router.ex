@@ -32,8 +32,11 @@ defmodule Tt1Web.Router do
     delete "/session", SessionController, :delete
     get "/session", SessionController, :delete
     get "/users/new", PageController, :index
-    get "users/show/:id", PageController, :index
-    get "users/edit/:id", PageController, :index
+    get "/users/show/:id", PageController, :index
+    get "/users/edit/:id", PageController, :index
+    get "/posts/new/:id", PageController, :index
+    get "/posts/show/:id", PageController, :index
+    get "/posts/edit/:id", PageController, :index
 
   end
 
@@ -42,5 +45,6 @@ defmodule Tt1Web.Router do
      pipe_through :api
 
      resources "/users", UserController, except: [:new, :edit]
+     resources "/posts", PostController, except: [:new, :edit]
    end
 end

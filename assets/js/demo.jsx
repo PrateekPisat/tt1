@@ -17,6 +17,7 @@ class Demo extends React.Component {
     };
 
     this.request_users();
+    this.request_posts();
   }
 
   request_users() {
@@ -29,6 +30,17 @@ class Demo extends React.Component {
         },
       });
     }
+
+    request_posts() {
+        $.ajax("/api/v1/posts", {
+          method: "get",
+          dataType: "json",
+          contentType: "application/json; charset=UTF-8",
+          success: (resp) => {
+            this.setState(_.extend(this.state, { posts: resp.data }));
+          },
+        });
+      }
 
 create_user()
 {
@@ -94,6 +106,99 @@ delete_user(id)
   });
 }
 
+create_post(id)
+{
+  let us_id = parseInt($('#user_id').val());
+  console.log(us_id)
+  let task_name = $('#task_name').val();
+  let body = $('#body').val();
+  var complete = $('#complete').val();
+  let time = parseInt($('#time').val());
+  if(complete == "on")
+    complete = true
+  else {
+    compelete = false
+    }
+  let text = JSON.stringify({
+        post: {
+          name: task_name,
+          user_id: us_id,
+          body: body,
+          completed: complete,
+          time: time
+        }
+  });
+  $.ajax("/api/v1/posts", {
+    method: "POST",
+    dataType: "json",
+    contentType: "application/json; charset=UTF-8",
+    data: text,
+    success: (resp) => {
+          alert("Task Added")
+          window.location.replace("/users/show/" + id);
+      },
+  });
+}
+
+update_post(id, user_id)
+{
+  let us_id = parseInt($('#user_id').val());
+  console.log(us_id)
+  let task_name = $('#task_name').val();
+  let body = $('#body').val();
+  var complete = $('#complete').val();
+  let time = parseInt($('#time').val());
+  if(complete == "on")
+    complete = true
+  else {
+    compelete = false
+    }
+  let text = JSON.stringify({
+        id: id,
+        post: {
+          name: task_name,
+          user_id: us_id,
+          body: body,
+          completed: complete,
+          time: time
+        }
+  });
+  $.ajax("/api/v1/posts/" + id, {
+    method: "PUT",
+    dataType: "json",
+    contentType: "application/json; charset=UTF-8",
+    data: text,
+    success: (resp) => {
+          alert("Task Updated")
+          window.location.replace("/users/show/" + user_id);
+      },
+  });
+}
+
+delete_post(id, user_id)
+{
+  $.ajax("/api/v1/posts/" + id, {
+    method: "DELETE",
+    dataType: "json",
+    contentType: "application/json; charset=UTF-8",
+    success: (resp) => {
+          alert("Profile Deleted!")
+          window.location.replace("/users/show/" + user_id);
+      },
+  });
+}
+
+
+
+getUser(id)
+{
+  console.log(id)
+  var post = _.filter(this.state.posts, (pp) => id == pp.id)
+  console.log(post);
+  var user = _.find(this.state.users, (u) => {u.id == post.user_id})
+  return user.name;
+}
+
   render() {
    return (
      <Router>
@@ -155,47 +260,58 @@ delete_user(id)
 
       <Route path="/users/show/:id/" render={({match}) =>
           <div>
-          <div>
-            <h1>Hello {_.map(_.filter(this.state.users, (pp) => match.params.id == pp.id), (u) => u.name)}</h1>
-            <p>Your Details:</p>
-            <ul>
-                <li><b>Email:</b> {_.map(_.filter(this.state.users, (pp) => match.params.id == pp.id), (u) => u.email)}</li>
-                <li><b>Name:</b> {_.map(_.filter(this.state.users, (pp) => match.params.id == pp.id), (u) => u.name)}</li>
-            </ul>
-          </div>
-          <p><Link to="/posts/new">New Task</Link></p>
-          <div>
-            Your Tasks
-            <table className = "table">
-              <thead>
-                <tr>
-                  <th>Task Name</th>
-                  <th>Completed?</th>
-                  <th>Total Time</th>
-                </tr>
-              </thead>
-              {/* Table Body */}
-            </table>
-          </div>
-          <div>
-            <p><button className="btn" onClick = {() => {this.delete_user(match.params.id)}}>Delete Profile</button></p>
-            <p><Link to={"/users/edit/" + match.params.id}>Edit Profile</Link></p>
-            <p><a href="/session" method="delete">Logout</a></p>
-          </div>
+            <div>
+              <h1>Hello {_.map(_.filter(this.state.users, (pp) => match.params.id == pp.id), (u) => u.name)}</h1>
+              <p>Your Details:</p>
+              <ul>
+                  <li><b>Email:</b> {_.map(_.filter(this.state.users, (pp) => match.params.id == pp.id), (u) => u.email)}</li>
+                  <li><b>Name:</b> {_.map(_.filter(this.state.users, (pp) => match.params.id == pp.id), (u) => u.name)}</li>
+              </ul>
+            </div>
+            <p><Link to={"/posts/new/" + match.params.id}>New Task</Link></p>
+            <div>
+              Your Tasks
+              <table className = "table">
+                <thead>
+                  <tr>
+                    <th>Task Name</th>
+                    <th>Completed?</th>
+                    <th>Total Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {_.map(_.filter(this.state.posts, (pp) => parseInt(match.params.id) == pp.user_id), (p) =>
+                      <tr>
+                        <td>{p.name}</td>
+                        <td>{p.completed.toString()}</td>
+                        <td>{p.time}</td>
+                        <td><Link to={"/posts/show/" + p.id}>Show</Link></td>
+                        <td><Link to={"/posts/edit/" + p.id}>Edit</Link></td>
+                        <td><button className="btn btn-danger" onClick={() => this.delete_post(p.id, match.params.id)}>Delete</button></td>
+                      </tr>
+                    )}
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <p><button className="btn" onClick = {() => {this.delete_user(match.params.id)}}>Delete Profile</button></p>
+              <p><Link to={"/users/edit/" + match.params.id}>Edit Profile</Link></p>
+              <p><a href="/session" method="delete">Logout</a></p>
+            </div>
           </div>
       }/>
 
       {/* Edit User */}
-      <Route path="/users/edit/:id/" render={({match}) =>
+      <Route path="/users/edit/:id" render={({match}) =>
         <div>
             <h1>New User</h1>
             <div className="form-group">
               Name<br/>
-            <input type="text_input" id="user_name" name="name" value={_.map(_.filter(this.state.users, (pp) => match.params.id == pp.id), (u) => u.name)} />
+            <input type="text_input" id="user_name" name="name" />
             </div>
             <div className="form-group">
               Email<br/>
-            <input type="text_input" id="email" name="email" value={_.map(_.filter(this.state.users, (pp) => match.params.id == pp.id), (u) => u.email)} />
+            <input type="text_input" id="email" name="email" />
             </div>
             <div className="form-group">
               <input type="button" value="Update Profile" onClick={() => this.edit_user(match.params.id)} className= "btn btn-primary"/>
@@ -205,6 +321,101 @@ delete_user(id)
             </div>
         </div>
       }/>
+
+    {/* New Post */}
+      <Route path="/posts/new/:id" render={({match}) =>
+            <div>
+              <div>
+                <h2>New Task</h2>
+              </div>
+              <div className="form-group">
+                Select a user<br/>
+                <select id="user_id" required>
+                  {_.map(this.state.users, (u) =>
+                    <option key={u.id} value={u.id}>{u.name}</option>
+                  )}
+                </select>
+              </div>
+              <div className="form-group">
+                Enter Task Name<br/>
+              <input type="text_input" id="task_name"/>
+              </div>
+              <div className="form-group">
+                Describe the Task<br/>
+              <textarea className="form-control" rows="5" id="body"></textarea>
+              </div>
+              Is the Task Complete?<br/>
+              <div className="checkbox">
+              <input id="complete" type="checkbox"/>
+              </div>
+              <div className="form-group">
+                Time Spent on This Task<br/>
+              <input type="number_input" id="time"/>
+              </div>
+              <div className="form-group">
+              <button className="btn btn-submit" onClick={() => {this.create_post(match.params.id)}}>Create Post</button>
+              </div>
+              <div>
+              <Link to={"/users/show/" + match.params.id}>Back</Link>
+              </div>
+            </div>
+        }/>
+
+      <Route path="/posts/show/:id" render={({match}) =>
+            <div>
+              <h2>Show Task</h2>
+              <div>
+                <ul>
+                  <li> Task Name: {_.map(_.filter(this.state.posts, (pp) => match.params.id == pp.id), (t) => t.name)}</li>
+                  <li> Assigned To: {_.map(_.filter(this.state.posts, (pp) => match.params.id == pp.id), (t) => _.map(_.filter(this.state.users, (uu) => uu.id == t.user_id), (z) => z.name))}</li>
+                  <li> Task Discription: {_.map(_.filter(this.state.posts, (pp) => match.params.id == pp.id), (t) => t.body)}</li>
+                  <li> Task Name: {_.map(_.filter(this.state.posts, (pp) => match.params.id == pp.id), (t) => t.completed)}</li>
+                  <li> Ammount of Time Spent on This Task: {_.map(_.filter(this.state.posts, (pp) => match.params.id == pp.id), (t) => t.time)}</li>
+                </ul>
+              </div>
+              <div>
+                <Link to={"/users/show/" + _.map(_.filter(this.state.posts, (pp) => match.params.id == pp.id), (t) => t.user_id)}>Back</Link>
+              </div>
+            </div>
+          }/>
+
+        <Route path="/posts/edit/:id" render={({match}) =>
+          <div>
+            <div>
+              <h2>Edit Task {_.map(_.filter(this.state.posts, (pp) => match.params.id == pp.id), (t) => t.name)}</h2>
+            </div>
+            <div className="form-group">
+              Select a user<br/>
+              <select id="user_id" required>
+                {_.map(this.state.users, (u) =>
+                  <option key={u.id} value={u.id}>{u.name}</option>
+                )}
+              </select>
+            </div>
+            <div className="form-group">
+              Enter Task Name<br/>
+            <input type="text_input" id="task_name" />
+            </div>
+            <div className="form-group">
+              Describe the Task<br/>
+            <textarea className="form-control" rows="5" id="body" ></textarea>
+            </div>
+            Is the Task Complete?<br/>
+            <div className="checkbox">
+            <input id="complete" type="checkbox"/>
+            </div>
+            <div className="form-group">
+              Time Spent on This Task<br/>
+            <input type="number_input" id="time" />
+            </div>
+            <div className="form-group">
+            <button className="btn btn-submit" onClick={() => {this.update_post(match.params.id, _.map(_.filter(this.state.posts, (pp) => match.params.id == pp.id), (t) => t.user_id))}}>Update Task</button>
+            </div>
+            <div>
+            <Link to={"/users/show/" + _.map(_.filter(this.state.posts, (pp) => match.params.id == pp.id), (t) => t.user_id)}>Back</Link>
+            </div>
+          </div>
+        } />
        </div>
      </Router>
    );

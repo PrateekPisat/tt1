@@ -2,70 +2,67 @@ defmodule Tt1Web.PostControllerTest do
   use Tt1Web.ConnCase
 
   alias Tt1.Social
+  alias Tt1.Social.Post
 
-  @create_attrs %{body: "some body", completed: true, hoursspent: 42, taskname: "some taskname"}
-  @update_attrs %{body: "some updated body", completed: false, hoursspent: 43, taskname: "some updated taskname"}
-  @invalid_attrs %{body: nil, completed: nil, hoursspent: nil, taskname: nil}
+  @create_attrs %{body: "some body", completed: true, name: "some name", time: 42}
+  @update_attrs %{body: "some updated body", completed: false, name: "some updated name", time: 43}
+  @invalid_attrs %{body: nil, completed: nil, name: nil, time: nil}
 
   def fixture(:post) do
     {:ok, post} = Social.create_post(@create_attrs)
     post
   end
 
+  setup %{conn: conn} do
+    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+  end
+
   describe "index" do
     test "lists all posts", %{conn: conn} do
       conn = get conn, post_path(conn, :index)
-      assert html_response(conn, 200) =~ "Listing Posts"
-    end
-  end
-
-  describe "new post" do
-    test "renders form", %{conn: conn} do
-      conn = get conn, post_path(conn, :new)
-      assert html_response(conn, 200) =~ "New Post"
+      assert json_response(conn, 200)["data"] == []
     end
   end
 
   describe "create post" do
-    test "redirects to show when data is valid", %{conn: conn} do
+    test "renders post when data is valid", %{conn: conn} do
       conn = post conn, post_path(conn, :create), post: @create_attrs
-
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == post_path(conn, :show, id)
+      assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get conn, post_path(conn, :show, id)
-      assert html_response(conn, 200) =~ "Show Post"
+      assert json_response(conn, 200)["data"] == %{
+        "id" => id,
+        "body" => "some body",
+        "completed" => true,
+        "name" => "some name",
+        "time" => 42}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post conn, post_path(conn, :create), post: @invalid_attrs
-      assert html_response(conn, 200) =~ "New Post"
-    end
-  end
-
-  describe "edit post" do
-    setup [:create_post]
-
-    test "renders form for editing chosen post", %{conn: conn, post: post} do
-      conn = get conn, post_path(conn, :edit, post)
-      assert html_response(conn, 200) =~ "Edit Post"
+      assert json_response(conn, 422)["errors"] != %{}
     end
   end
 
   describe "update post" do
     setup [:create_post]
 
-    test "redirects when data is valid", %{conn: conn, post: post} do
+    test "renders post when data is valid", %{conn: conn, post: %Post{id: id} = post} do
       conn = put conn, post_path(conn, :update, post), post: @update_attrs
-      assert redirected_to(conn) == post_path(conn, :show, post)
+      assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
-      conn = get conn, post_path(conn, :show, post)
-      assert html_response(conn, 200) =~ "some updated body"
+      conn = get conn, post_path(conn, :show, id)
+      assert json_response(conn, 200)["data"] == %{
+        "id" => id,
+        "body" => "some updated body",
+        "completed" => false,
+        "name" => "some updated name",
+        "time" => 43}
     end
 
     test "renders errors when data is invalid", %{conn: conn, post: post} do
       conn = put conn, post_path(conn, :update, post), post: @invalid_attrs
-      assert html_response(conn, 200) =~ "Edit Post"
+      assert json_response(conn, 422)["errors"] != %{}
     end
   end
 
@@ -74,7 +71,7 @@ defmodule Tt1Web.PostControllerTest do
 
     test "deletes chosen post", %{conn: conn, post: post} do
       conn = delete conn, post_path(conn, :delete, post)
-      assert redirected_to(conn) == post_path(conn, :index)
+      assert response(conn, 204)
       assert_error_sent 404, fn ->
         get conn, post_path(conn, :show, post)
       end

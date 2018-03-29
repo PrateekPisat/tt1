@@ -7,8 +7,8 @@ defmodule Tt1.Social.Post do
   schema "posts" do
     field :body, :string
     field :completed, :boolean, default: false
-    field :hoursspent, :integer
-    field :taskname, :string, null: false
+    field :time, :integer
+    field :name, :string, null: false
     belongs_to :user, Tt1.Accounts.User
 
     timestamps()
@@ -17,7 +17,7 @@ defmodule Tt1.Social.Post do
   @doc false
   def changeset(%Post{} = post, attrs) do
     post
-    |> cast(attrs, [:taskname, :completed, :hoursspent, :body])
-    |> validate_required([:taskname, :completed, :hoursspent, :body])
+    |> cast(attrs, [:name, :completed, :time, :body, :user_id])
+    |> validate_required([:name, :completed, :time, :body, :user_id])
   end
 end
