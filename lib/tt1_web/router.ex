@@ -12,6 +12,8 @@ defmodule Tt1Web.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_flash
   end
 
 #  def fetch_current_user(conn, _) do

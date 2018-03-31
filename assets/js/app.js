@@ -13,18 +13,18 @@
 // to also remove its path from "config.paths.watched".
 import "phoenix_html"
 import run_demo from "./demo";
+import store from './store';
+import api from './api';
 
-function start()
-{
 	let root = document.getElementById('root');
-	if(root)
-	{
-  		run_demo(root);
-  }
-}
+	$(function() {
+		api.request_tasks();
+		api.request_users();
+  	run_demo(root, store);
+	});
 
 // Use jQuery to delay until page loaded.
-$(start());
+
 // Import local files
 //
 // Local files can be imported directly using relative

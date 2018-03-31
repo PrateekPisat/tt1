@@ -9,12 +9,14 @@ defmodule Tt1Web.FallbackController do
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_status(:unprocessable_entity)
+    |> put_flash(:error, "Please Check in Input Fields and Try Again!")
     |> render(Tt1Web.ChangesetView, "error.json", changeset: changeset)
   end
 
   def call(conn, {:error, :not_found}) do
     conn
     |> put_status(:not_found)
+    |> put_flash(:error, "Please Check in Input Fields and Try Again!")
     |> render(Tt1Web.ErrorView, :"404")
   end
 end
