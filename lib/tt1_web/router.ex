@@ -30,9 +30,7 @@ defmodule Tt1Web.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    post "/session", SessionController, :create
-    delete "/session", SessionController, :delete
-    get "/session", SessionController, :delete
+    get "/landing", PageController, :index
     get "/users/new", PageController, :index
     get "/users/show/:id", PageController, :index
     get "/users/edit/:id", PageController, :index
@@ -48,5 +46,6 @@ defmodule Tt1Web.Router do
 
      resources "/users", UserController, except: [:new, :edit]
      resources "/posts", PostController, except: [:new, :edit]
+       post "/session", SessionController, :create
    end
 end

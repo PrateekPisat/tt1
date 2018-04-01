@@ -35,12 +35,16 @@ const mapStateToProps = state => {
       time: state.new_post_form.time,
     },
     edit_post_form: {
-      user_id: state.new_post_form.user_id,
-      name: state.new_post_form.name,
-      body: state.new_post_form.body,
-      complete: state.new_post_form.complete,
-      time: state.new_post_form.time,
-    }
+      user_id: state.edit_post_form.user_id,
+      name: state.edit_post_form.name,
+      body: state.edit_post_form.body,
+      complete: state.edit_post_form.complete,
+      time: state.edit_post_form.time,
+    },
+    login_form: {
+      name: state.login.name,
+    },
+    token: state.token,
   }
 }
 
@@ -55,23 +59,91 @@ let Demo = connect((state) => mapStateToProps)((props) => {
               <div>
                 <h1>Login</h1>
               </div>
-              <form action="/session" method="post">
                 <div className="form-group">
                   Name<br/>
-                  <input type="text_input" name="name" placeholder="Username" />
+                <input type="text_input" id="name" name="name" placeholder="Username" value={props.login_form.name} onChange={api.update_login_form}/>
                 </div>
                 <div className="form-group">
                   Password<br/>
-                  <input type="password" name="password"/>
+                <input type="password" id="pass" name="password"/>
                 </div>
                 <div className="form-group">
-                  <input type="submit" value="Login!" className= "btn btn-primary"/>
+                  <Link to="/landing" onClick={() => api.submit_login($('#name').val(), $('#pass').val())} className= "btn btn-primary">Login!</Link>
                 </div>
-              </form>
               <div>
                 New Users Register <Link to="/users/new">here</Link>
               </div>
             </div>
+          }/>
+
+          {/* Show User */}
+        <Route path="/landing" render={() =>
+            {
+              if(props.token && props.token != "Invalid")
+              {
+                return(
+                  <div>
+                    <div>
+                      <h1>Hello {_.map(_.filter(props.users, (u) => u.id == props.token.user_id), (uu) => uu.name)}</h1>
+                      <p>Your Details:</p>
+                      <ul>
+                          <li><b>Email:</b> {_.map(_.filter(props.users, (u) => u.id == props.token.user_id), (uu) => uu.email)}</li>
+                          <li><b>Name:</b> {_.map(_.filter(props.users, (u) => u.id == props.token.user_id), (uu) => uu.name)}</li>
+                      </ul>
+                    </div>
+                    <p><Link to={"/posts/new/" + props.token.user_id}>New Task</Link></p>
+                    <div>
+                      Your Tasks
+                      <table className = "table">
+                        <thead>
+                          <tr>
+                            <th>Task Name</th>
+                            <th>Completed?</th>
+                            <th>Total Time</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {_.map(_.filter(props.posts, (pp) => parseInt(props.token.user_id) == pp.user_id), (p) =>
+                              <tr>
+                                <td>{p.name}</td>
+                                <td>{p.completed.toString()}</td>
+                                <td>{p.time}</td>
+                                <td><Link to={"/posts/show/" + p.id} onClick={() => null}>Show</Link></td>
+                                <td><Link to={"/posts/edit/" + p.id}>Edit</Link></td>
+                                <td><Link to="/landing" className="btn btn-danger" onClick={() => api.delete_post(p.id, props.token.user_id, props.token)}>Delete</Link></td>
+                              </tr>
+                            )}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div>
+                      <p><Link to="/" className="btn btn-danger" onClick = {() => {api.delete_user(props.token.user_id, props.token)}}>Delete Profile</Link></p>
+                      <p><Link to={"/users/edit/" + props.token.user_id}>Edit Profile</Link></p>
+                      <p><Link to="/" onClick={() => api.resetToken()}>Logout</Link></p>
+                    </div>
+                  </div>
+                );
+              }
+              else if (props.token == "Invalid"){
+                  return(
+                    <div>
+                      Invalid username and password.<br/>
+                      Please Re-Login.<br/>
+                      <Link to="/">Back To HomePage</Link>
+                    </div>
+                  );
+              }
+              else {
+                return (
+                  <div>
+                    Authenticating...Please Wait.
+                    <div>
+                      <Link to="/">Cancel</Link>
+                    </div>
+                  </div>
+                );
+              }
+            }
           }/>
 
         {/* New User */}
@@ -99,7 +171,8 @@ let Demo = connect((state) => mapStateToProps)((props) => {
                   <input type="password" id="password_confirmation" name="password_confirmation"/>
                   </div>
                   <div className="form-group">
-                    <Link to="/" className="btn btn-submit" onClick={() => api.create_user()}>Register</Link>
+                    <Link to="/" className="btn btn-primary" onClick={() => api.create_user()}>Register</Link>
+                    <button className="btn btn-secondary" onClick={() => api.clear_new_user_form()}>Clear</button>
                   </div>
                   <div>
                     <Link to="/">Back</Link>
@@ -107,51 +180,6 @@ let Demo = connect((state) => mapStateToProps)((props) => {
               </div>
             </div>
         }/>
-
-      {/* Show User */}
-      <Route path="/users/show/:id/" render={({match}) =>
-          <div>
-            <div>
-              <h1>Hello {_.map(_.filter(props.users, (pp) => match.params.id == pp.id), (u) => u.name)}</h1>
-              <p>Your Details:</p>
-              <ul>
-                  <li><b>Email:</b> {_.map(_.filter(props.users, (pp) => match.params.id == pp.id), (u) => u.email)}</li>
-                  <li><b>Name:</b> {_.map(_.filter(props.users, (pp) => match.params.id == pp.id), (u) => u.name)}</li>
-              </ul>
-            </div>
-            <p><Link to={"/posts/new/" + match.params.id}>New Task</Link></p>
-            <div>
-              Your Tasks
-              <table className = "table">
-                <thead>
-                  <tr>
-                    <th>Task Name</th>
-                    <th>Completed?</th>
-                    <th>Total Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    {_.map(_.filter(props.posts, (pp) => parseInt(match.params.id) == pp.user_id), (p) =>
-                      <tr>
-                        <td>{p.name}</td>
-                        <td>{p.completed.toString()}</td>
-                        <td>{p.time}</td>
-                        <td>{p.id}</td>
-                        <td><Link to={"/posts/show/" + p.id} onClick={() => null}>Show</Link></td>
-                        <td><Link to={"/posts/edit/" + p.id}>Edit</Link></td>
-                        <td><Link to={"/users/show/" + match.params.id} className="btn btn-danger" onClick={() => api.delete_post(p.id, match.params.id)}>Delete</Link></td>
-                      </tr>
-                    )}
-                </tbody>
-              </table>
-            </div>
-            <div>
-              <p><Link to="/" className="btn btn-danger" onClick = {() => {api.delete_user(match.params.id)}}>Delete Profile</Link></p>
-              <p><Link to={"/users/edit/" + match.params.id}>Edit Profile</Link></p>
-              <p><Link to="/">Logout</Link></p>
-            </div>
-          </div>
-      }/>
 
       {/* Edit User */}
       <Route path="/users/edit/:id" render={({match}) =>
@@ -166,10 +194,11 @@ let Demo = connect((state) => mapStateToProps)((props) => {
               <input type="text_input" id="email" name="email" value={props.edit_user_form.email} onChange={api.update_edit_user_form} required/>
               </div>
               <div className="form-group">
-                <Link to={"/users/show/" + match.params.id} onClick={() => api.edit_user(match.params.id)} className= "btn btn-primary">Update User</Link>
+                <Link to="/landing" onClick={() => api.edit_user(match.params.id, props.token)} className= "btn btn-primary">Update User</Link>
+                <button className="btn btn-secondary" onClick={() => api.clear_edit_user_form()}>Clear</button>
               </div>
             <div>
-              <Link to={"/users/show/" + match.params.id}>Back</Link>
+              <Link to="/landing">Back</Link>
             </div>
         </div>
       }/>
@@ -207,11 +236,11 @@ let Demo = connect((state) => mapStateToProps)((props) => {
               <input type="number_input" id="time" name="time" value={props.new_post_form.time} onChange={api.update_new_post_form} required/>
               </div>
               <div className="form-group">
-              <Link to={"/users/show/"+match.params.id} className="btn btn-submit" onClick={() => {api.create_post(match.params.id)}} >Create Task</Link>
+                <Link to="/landing" className="btn btn-primary" onClick={() => {api.create_post(match.params.id, props.token)}} >Create Task</Link>
+                <button className="btn btn-secondary" onClick={() => api.clear_new_post_form()}>Clear</button>
               </div>
-
               <div>
-              <Link to={"/users/show/" + match.params.id}>Back</Link>
+              <Link to="/landing">Back</Link>
               </div>
             </div>
         }/>
@@ -225,12 +254,12 @@ let Demo = connect((state) => mapStateToProps)((props) => {
                   <li> Task Name: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.name)}</li>
                   <li> Assigned To: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => _.map(_.filter(props.users, (uu) => uu.id == t.user_id), (z) => z.name))}</li>
                   <li> Task Discription: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.body)}</li>
-                  <li> Task Name: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.completed)}</li>
+                  <li> Task Name: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.name)}</li>
                   <li> Ammount of Time Spent on This Task: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.time)}</li>
                 </ul>
               </div>
               <div>
-                <Link to={"/users/show/" + _.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.user_id)}>Back</Link>
+                <Link to="/landing">Back</Link>
               </div>
             </div>
           }/>
@@ -252,7 +281,7 @@ let Demo = connect((state) => mapStateToProps)((props) => {
             </div>
             <div className="form-group">
               Enter Task Name<br/>
-            <input type="text_input" id="task_name" name="name" value={props.edit_post_form.name} onChange={api.update_edit_post_form} required/>
+            <input type="text_input" name="name" value={props.edit_post_form.name} onChange={api.update_edit_post_form} required/>
             </div>
             <div className="form-group">
               Describe the Task<br/>
@@ -267,11 +296,12 @@ let Demo = connect((state) => mapStateToProps)((props) => {
             <input type="number_input" id="time" name="time" value={props.edit_post_form.time} onChange={api.update_edit_post_form} required/>
             </div>
             <div className="form-group">
-            <Link to={"/users/show/" + _.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.user_id)} className="btn btn-submit" onClick={() => {api.update_post(match.params.id, _.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.user_id))}}>Update Task</Link>
+              <Link to="/landing" className="btn btn-primary" onClick={() => {api.update_post(match.params.id, props.token.user_id, props.token)}}>Update Task</Link>
+              <button className="btn btn-secondary" onClick={() => api.clear_edit_post_form()}>Clear</button>
             </div>
 
             <div>
-            <Link to={"/users/show/" + _.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.user_id)}>Back</Link>
+            <Link to="/landing">Back</Link>
             </div>
           </div>
         } />

@@ -30,7 +30,7 @@ class TheServer
         });
       }
 
-      update(ev) {
+  update(ev) {
         let tgt = $(ev.target);
 
         let data = {};
@@ -43,7 +43,7 @@ class TheServer
         store.dispatch(action);
       }
 
-      update_edit_user_form(ev) {
+  update_edit_user_form(ev) {
         let tgt = $(ev.target);
 
         let data = {};
@@ -56,7 +56,7 @@ class TheServer
         store.dispatch(action);
       }
 
-      update_new_post_form(ev) {
+  update_new_post_form(ev) {
         let tgt = $(ev.target);
 
         let data = {};
@@ -69,7 +69,7 @@ class TheServer
         store.dispatch(action);
       }
 
-      update_edit_post_form(ev) {
+  update_edit_post_form(ev) {
         let tgt = $(ev.target);
 
         let data = {};
@@ -81,6 +81,54 @@ class TheServer
         //console.log(action);
         store.dispatch(action);
       }
+
+    update_login_form(ev) {
+        let tgt = $(ev.target);
+        let data = {};
+        data[tgt.attr('name')] = tgt.val();
+        let action = {
+          type: 'UPDATE_LOGIN_FORM',
+          data: data,
+        };
+        //console.log(action);
+        store.dispatch(action);
+        }
+
+    clear_new_post_form()
+    {
+      let action = {
+        type: 'CLEAR_NEW_POST_FORM',
+      };
+      //console.log(action);
+      store.dispatch(action);
+    }
+
+    clear_edit_post_form()
+    {
+      let action = {
+        type: 'CLEAR_EDIT_POST_FORM',
+      };
+      //console.log(action);
+      store.dispatch(action);
+    }
+
+    clear_new_user_form()
+    {
+      let action = {
+        type: 'CLEAR_NEW_USER_FORM',
+      };
+      //console.log(action);
+      store.dispatch(action);
+    }
+
+    clear_edit_user_form()
+    {
+      let action = {
+        type: 'CLEAR_EDIT_UESR_FORM',
+      };
+      //console.log(action);
+      store.dispatch(action);
+    }
 
   create_user()
   {
@@ -103,6 +151,7 @@ class TheServer
     data: text,
     success: () => {
             this.request_users();
+            this.clear_new_user_form();
       },
       error: (textStatus, errorThrown) => {
         alert(errorThrown);
@@ -110,12 +159,13 @@ class TheServer
   });
   }
 
-  edit_user(id)
+  edit_user(id, token)
   {
   let usName = $('#user_name').val();
   let email = $('#email').val();
   let text = JSON.stringify({
         id : id,
+        token: token,
         user: {
           name: usName,
           email: email,
@@ -129,6 +179,7 @@ class TheServer
     success: (resp) => {
           alert("Proile Updated with: \n name: "+usName+" \n email: "+email);
           this.request_users();
+          this.clear_edit_user_form();
       },
       error: (textStatus, errorThrown) => {
         alert(errorThrown);
@@ -136,17 +187,21 @@ class TheServer
   });
   }
 
-  delete_user(id)
+  delete_user(id, token)
   {
+    let data = JSON.stringify({
+      token: token
+    });
   $.ajax("/api/v1/users/" + id, {
     method: "DELETE",
     dataType: "json",
+    data: data,
     contentType: "application/json; charset=UTF-8",
   });
   alert("User Deleted!");
   }
 
-  create_post(id)
+  create_post(id, token)
   {
     let us_id = parseInt($('#user_id').val());
     console.log(us_id)
@@ -160,6 +215,7 @@ class TheServer
       complete = false
       }
     let text = JSON.stringify({
+          token: token,
           post: {
             name: task_name,
             user_id: us_id,
@@ -178,6 +234,7 @@ class TheServer
           success: (resp) => {
                 alert("Task Created");
                 this.request_tasks();
+                this.clear_new_post_form();
             },
             error: (textStatus, errorThrown) => {
               alert(errorThrown);
@@ -189,7 +246,7 @@ class TheServer
     }
   }
 
-  update_post(id, user_id)
+  update_post(id, user_id, token)
   {
   let us_id = parseInt($('#user_id').val());
   console.log(us_id)
@@ -200,15 +257,16 @@ class TheServer
   if(complete == "on")
     complete = true
   else {
-    compelete = false
+    complete = false
     }
   let text = JSON.stringify({
+        token: token,
         id: id,
         post: {
           name: task_name,
           user_id: us_id,
           body: body,
-          completed: complete,
+          complete: complete,
           time: time
         }
   });
@@ -220,6 +278,7 @@ class TheServer
     success: (resp) => {
           alert("Task Updated")
           this.request_tasks();
+          this.clear_edit_post_form();
       },
     error: (textStatus, errorThrown) => {
       alert(errorThrown);
@@ -227,18 +286,22 @@ class TheServer
   });
   }
 
-  delete_post(id, user_id)
+  delete_post(id, user_id, token)
   {
+    let data = JSON.stringify({
+      token: token
+    });
   $.ajax("/api/v1/posts/" + id, {
     method: "DELETE",
     dataType: "json",
     contentType: "application/json; charset=UTF-8",
+    data: data,
     success: (resp) => {
-          alert("Profile Deleted!")
+          alert("Task Deleted!")
           this.request_tasks();
       },
       error: (textStatus, errorThrown) => {
-        alert(errorThrown);
+        alert(errorThrown + " " + textStatus);
       },
   });
   }
@@ -246,10 +309,43 @@ class TheServer
   get_value(checkBoxInput)
   {
     if(checkBoxInput)
-      return "On"
+      return "on"
       else {
-        return "Off"
+        return "off"
       }
+  }
+
+  submit_login(name, pass) {
+    let data = {
+        name: name,
+        password: pass,
+    }
+    $.ajax("/api/v1/session", {
+      method: "post",
+      dataType: "json",
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(data),
+      success: (resp) => {
+        store.dispatch({
+          type: 'SET_TOKEN',
+          token: resp,
+        });
+      },
+      error:(resp) => {
+        store.dispatch({
+          type: 'SET_TOKEN',
+          token: "Invalid",
+        });
+      }
+    });
+  }
+
+  resetToken()
+  {
+    store.dispatch({
+      type: 'SET_TOKEN',
+      token: null,
+    });
   }
 
 }

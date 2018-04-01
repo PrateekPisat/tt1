@@ -26,20 +26,36 @@ defmodule Tt1Web.UserController do
     render(conn, "show.json", user: user)
   end
 
-  def update(conn, %{"id" => id, "user" => user_params}) do
+  def update(conn, %{"id" => id, "user" => user_params, "token" => token}) do
     user = Accounts.get_user!(id)
-
-    with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
-      conn = put_flash(conn, :info, "Profile Updated!")
-      render(conn, "show.json", user: user)
+    case Phoenix.Token.verify(conn, "auth token", token["token"], max_age: 86400) do
+      {:ok, user_id} ->
+        if user_id == token["user_id"] do
+          with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
+            conn = put_flash(conn, :info, "Profile Updated!")
+            render(conn, "show.json", user: user)
+          end
+        else
+          raise "Invalid Token!"
+        end
+      {:error, _} ->
+        raise "Invalid Token!"
     end
   end
 
-  def delete(conn, %{"id" => id}) do
+  def delete(conn, %{"id" => id, "token" => token}) do
     user = Accounts.get_user!(id)
-    with {:ok, %User{}} <- Accounts.delete_user(user) do
-      conn = put_flash(conn, :info, "User deleted!")
-      send_resp(conn, :no_content, "")
+    case Phoenix.Token.verify(conn, "auth token", token["token"], max_age: 86400) do
+      {:ok, user_id} ->
+        if user_id == token["user_id"] do
+          with {:ok, %User{}} <- Accounts.delete_user(user) do
+            send_resp(conn, :no_content, "")
+          end
+        else
+          raise "Invalid Token!"
+        end
+      {:error, _} ->
+        raise "Invalid Token!"
     end
   end
 end
