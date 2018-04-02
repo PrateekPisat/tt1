@@ -129,6 +129,15 @@ class TheServer
       store.dispatch(action);
     }
 
+    clear_login_form()
+    {
+      let action = {
+        type: 'CLEAR_LOGIN_FORM',
+      };
+      //console.log(action);
+      store.dispatch(action);
+    }
+
   create_user()
   {
   let usName = $('#user_name').val();
@@ -151,6 +160,7 @@ class TheServer
     success: () => {
             this.request_users();
             this.clear_new_user_form();
+            alert("Profile Created. Please Login With Your Credentials.")
       },
       error: (textStatus, errorThrown) => {
         alert(errorThrown);
@@ -330,6 +340,7 @@ class TheServer
           type: 'SET_TOKEN',
           token: resp,
         });
+        this.clear_login_form();
       },
       error:(resp) => {
         store.dispatch({

@@ -43,6 +43,7 @@ const mapStateToProps = state => {
     },
     login_form: {
       name: state.login.name,
+      password: state.login.password,
     },
     token: state.token,
   }
@@ -65,10 +66,11 @@ let Demo = connect((state) => mapStateToProps)((props) => {
                 </div>
                 <div className="form-group">
                   Password<br/>
-                <input type="password" id="pass" name="password"/>
+                <input type="password" id="password" name="password" value={props.login_form.password} onChange={api.update_login_form}/>
                 </div>
                 <div className="form-group">
-                  <Link to="/landing" onClick={() => api.submit_login($('#name').val(), $('#pass').val())} className= "btn btn-primary">Login!</Link>
+                  <Link to="/landing" onClick={() => api.submit_login($('#name').val(), $('#password').val())} className= "btn btn-primary">Login!</Link>
+                  <button onClick={() => api.clear_login_form()} className= "btn btn-secondary">Clear</button>
                 </div>
               <div>
                 New Users Register <Link to="/users/new">here</Link>
@@ -140,7 +142,7 @@ let Demo = connect((state) => mapStateToProps)((props) => {
                     If you are stuck on this page for a long time( more than 2 minutes) then your session might have expired.<br/>
                     Please re-login.
                     <div>
-                      <Link to="/">Cancel</Link>
+                      <Link to="/" onClick={() => api.resetToken()}>Cancel</Link>
                     </div>
                   </div>
                 );
@@ -163,14 +165,14 @@ let Demo = connect((state) => mapStateToProps)((props) => {
                   </div>
                   <div className="form-group">
                     Password<br/>
-                  <input type="password" id="password" name="password" />
+                  <input type="password" id="password" name="password" value={props.new_user_form.password} onChange={api.update}/>
                     <p id="passwordHelpBlock" class="form-text text-muted">
                       Your password must be 7-20 characters long, contain letters and numbers, and must not contain spaces.
                     </p>
                   </div>
                   <div className="form-group">
                     Password Confirmation<br/>
-                  <input type="password" id="password_confirmation" name="password_confirmation"/>
+                  <input type="password" id="password_confirmation" name="password_confirmation" value={props.new_user_form.password_confirmation} onChange={api.update}/>
                   </div>
                   <div className="form-group">
                     <Link to="/" className="btn btn-primary" onClick={() => api.create_user()}>Register</Link>
