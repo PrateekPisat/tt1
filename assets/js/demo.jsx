@@ -228,8 +228,11 @@ let Demo = connect((state) => mapStateToProps)((props) => {
               <textarea className="form-control" rows="5" id="body" name="body" value={props.new_post_form.body} onChange={api.update_new_post_form}></textarea>
               </div>
               Is the Task Complete?<br/>
-              <div className="checkbox">
-              <input id="complete" type="checkbox" name="compelete" value={api.get_value(props.new_post_form.completed)} onChange={api.update_new_post_form}/>
+              <div className="form-group">
+                <select id="complete" id="complete" name="complete" value={props.new_post_form.complete} onChange={api.update_new_post_form}>
+                  <option value="true" >Yes</option>
+                  <option value="false" >No</option>
+                </select>
               </div>
               <div className="form-group">
                 Time Spent on This Task<br/>
@@ -254,7 +257,7 @@ let Demo = connect((state) => mapStateToProps)((props) => {
                   <li> Task Name: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.name)}</li>
                   <li> Assigned To: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => _.map(_.filter(props.users, (uu) => uu.id == t.user_id), (z) => z.name))}</li>
                   <li> Task Discription: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.body)}</li>
-                  <li> Task Name: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.name)}</li>
+                  <li> Is the task Complete: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.completed.toString())}</li>
                   <li> Ammount of Time Spent on This Task: {_.map(_.filter(props.posts, (pp) => match.params.id == pp.id), (t) => t.time)}</li>
                 </ul>
               </div>
@@ -272,7 +275,7 @@ let Demo = connect((state) => mapStateToProps)((props) => {
             </div>
             <div className="form-group">
               Select a user<br/>
-            <select id="user_id" required name="user_id" value={props.edit_post_form.user_id} onChange={api.update_edit_post_form}>
+            <select id="user_id" required id="user_id" name="user_id" value={props.edit_post_form.user_id} onChange={api.update_edit_post_form}>
                 <option>Select</option>
                 {_.map(props.users, (u) =>
                   <option key={u.id} value={u.id}>{u.name}</option>
@@ -281,15 +284,18 @@ let Demo = connect((state) => mapStateToProps)((props) => {
             </div>
             <div className="form-group">
               Enter Task Name<br/>
-            <input type="text_input" name="name" value={props.edit_post_form.name} onChange={api.update_edit_post_form} required/>
+            <input type="text_input" id="name" name="name" value={props.edit_post_form.name} onChange={api.update_edit_post_form} required/>
             </div>
             <div className="form-group">
               Describe the Task<br/>
-            <textarea className="form-control" name="body" rows="5" id="body" value={props.edit_post_form.body} onChange={api.update_edit_post_form}></textarea>
+            <textarea className="form-control" id="body" name="body" rows="5" id="body" value={props.edit_post_form.body} onChange={api.update_edit_post_form}></textarea>
             </div>
             Is the Task Complete?<br/>
             <div className="checkbox">
-            <input id="complete" type="checkbox" name="complete" value={api.get_value(props.new_post_form.completed)} onChange={api.update_edit_post_form} />
+            <select id="complete" id="complete" name="complete" value={props.edit_post_form.complete} onChange={api.update_edit_post_form} >
+              <option value="true" >Yes</option>
+              <option value="false" >No</option>
+            </select>
             </div>
             <div className="form-group">
               Time Spent on This Task<br/>

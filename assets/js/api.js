@@ -71,7 +71,6 @@ class TheServer
 
   update_edit_post_form(ev) {
         let tgt = $(ev.target);
-
         let data = {};
         data[tgt.attr('name')] = tgt.val();
         let action = {
@@ -209,7 +208,7 @@ class TheServer
     let body = $('#body').val();
     var complete = $('#complete').val();
     let time = parseInt($('#time').val());
-    if(complete == "on")
+    if(complete == "true")
       complete = true
     else {
       complete = false
@@ -250,11 +249,12 @@ class TheServer
   {
   let us_id = parseInt($('#user_id').val());
   console.log(us_id)
-  let task_name = $('#task_name').val();
+  let task_name = $('#name').val();
   let body = $('#body').val();
   var complete = $('#complete').val();
+  console.log(complete)
   let time = parseInt($('#time').val());
-  if(complete == "on")
+  if(complete == "true")
     complete = true
   else {
     complete = false
@@ -266,7 +266,7 @@ class TheServer
           name: task_name,
           user_id: us_id,
           body: body,
-          complete: complete,
+          completed: complete,
           time: time
         }
   });
