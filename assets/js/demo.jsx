@@ -131,7 +131,7 @@ let Demo = connect((state) => mapStateToProps)((props) => {
                     <div>
                       Invalid username and password.<br/>
                       Please Re-Login.<br/>
-                      <Link to="/">Back To HomePage</Link>
+                      <Link to="/" onClick={() => api.resetToken()}>Back To HomePage</Link>
                     </div>
                   );
               }
