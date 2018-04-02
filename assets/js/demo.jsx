@@ -136,7 +136,9 @@ let Demo = connect((state) => mapStateToProps)((props) => {
               else {
                 return (
                   <div>
-                    Authenticating...Please Wait.
+                    Authenticating...Please Wait.<br/>
+                    If you are stuck on this page for a long time( more than 2 minutes) then your session might have expired.<br/>
+                    Please re-login.
                     <div>
                       <Link to="/">Cancel</Link>
                     </div>
