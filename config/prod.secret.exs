@@ -17,5 +17,4 @@ config :tt1, Tt1.Repo,
   username: "tt1",
   password: "Pradnya&1",
   database: "tt1_prod",
-  host: localhost,
   pool_size: 15
