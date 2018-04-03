@@ -163,7 +163,7 @@ class TheServer
             alert("Profile Created. Please Login With Your Credentials.")
       },
       error: (textStatus, errorThrown) => {
-        alert(errorThrown);
+        alert(errorThrown + "! Please Check the input field. No field should be blank.");
       },
   });
   }
@@ -191,7 +191,7 @@ class TheServer
           this.clear_edit_user_form();
       },
       error: (textStatus, errorThrown) => {
-        alert(errorThrown);
+        alert(errorThrown + "! Please Check the input field. No field should be blank.");
       },
   });
   }
@@ -233,7 +233,7 @@ class TheServer
             time: time
           }
     });
-    if (time % 15 ==0)
+    if (time % 15 == 0 && time >= 0)
     {
         $.ajax("/api/v1/posts", {
           method: "POST",
@@ -246,54 +246,60 @@ class TheServer
                 this.clear_new_post_form();
             },
             error: (textStatus, errorThrown) => {
-              alert(errorThrown);
+              alert(errorThrown + "! Please Check the input field. No field should be blank.");
             }
         });
     }
     else {
-      alert("Time should be in the increments of 15");
+      alert("Time should be non-negative and in increments of 15");
     }
   }
 
   update_post(id, user_id, token)
   {
-  let us_id = parseInt($('#user_id').val());
-  console.log(us_id)
-  let task_name = $('#name').val();
-  let body = $('#body').val();
-  var complete = $('#complete').val();
-  console.log(complete)
-  let time = parseInt($('#time').val());
-  if(complete == "true")
-    complete = true
-  else {
-    complete = false
+    let us_id = parseInt($('#user_id').val());
+    console.log(us_id)
+    let task_name = $('#name').val();
+    let body = $('#body').val();
+    var complete = $('#complete').val();
+    console.log(complete)
+    let time = parseInt($('#time').val());
+    if(complete == "true")
+      complete = true
+    else {
+      complete = false
+      }
+    let text = JSON.stringify({
+          token: token,
+          id: id,
+          post: {
+            name: task_name,
+            user_id: us_id,
+            body: body,
+            completed: complete,
+            time: time
+          }
+    });
+    if (time % 15 == 0 && time >= 0)
+    {
+        $.ajax("/api/v1/posts", {
+          method: "POST",
+          dataType: "json",
+          contentType: "application/json; charset=UTF-8",
+          data: text,
+          success: (resp) => {
+                alert("Task Created");
+                this.request_tasks();
+                this.clear_new_post_form();
+            },
+            error: (textStatus, errorThrown) => {
+              alert(errorThrown + "! Please Check the input field. No field should be blank.");
+            }
+        });
     }
-  let text = JSON.stringify({
-        token: token,
-        id: id,
-        post: {
-          name: task_name,
-          user_id: us_id,
-          body: body,
-          completed: complete,
-          time: time
-        }
-  });
-  $.ajax("/api/v1/posts/" + id, {
-    method: "PUT",
-    dataType: "json",
-    contentType: "application/json; charset=UTF-8",
-    data: text,
-    success: (resp) => {
-          alert("Task Updated")
-          this.request_tasks();
-          this.clear_edit_post_form();
-      },
-    error: (textStatus, errorThrown) => {
-      alert(errorThrown);
+    else {
+      alert("Time should be non-negative and in increments of 15");
     }
-  });
   }
 
   delete_post(id, user_id, token)

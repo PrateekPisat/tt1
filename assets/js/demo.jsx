@@ -167,7 +167,7 @@ let Demo = connect((state) => mapStateToProps)((props) => {
                     Password<br/>
                   <input type="password" id="password" name="password" value={props.new_user_form.password} onChange={api.update}/>
                     <p id="passwordHelpBlock" class="form-text text-muted">
-                      Your password must be 7-20 characters long, contain letters and numbers, and must not contain spaces.
+                      Your password must be 7 characters long, contain letters,numbers and special characters.
                     </p>
                   </div>
                   <div className="form-group">
@@ -240,7 +240,7 @@ let Demo = connect((state) => mapStateToProps)((props) => {
               </div>
               <div className="form-group">
                 Time Spent on This Task<br/>
-              <input type="number_input" id="time" name="time" value={props.new_post_form.time} onChange={api.update_new_post_form} required/>
+              <input type="number" id="time" name="time" value={props.new_post_form.time} onChange={api.update_new_post_form} required/>
               </div>
               <div className="form-group">
                 <Link to="/landing" className="btn btn-primary" onClick={() => {api.create_post(match.params.id, props.token)}} >Create Task</Link>
@@ -303,7 +303,7 @@ let Demo = connect((state) => mapStateToProps)((props) => {
             </div>
             <div className="form-group">
               Time Spent on This Task<br/>
-            <input type="number_input" id="time" name="time" value={props.edit_post_form.time} onChange={api.update_edit_post_form} required/>
+            <input type="number" id="time" name="time" value={props.edit_post_form.time} onChange={api.update_edit_post_form} required/>
             </div>
             <div className="form-group">
               <Link to="/landing" className="btn btn-primary" onClick={() => {api.update_post(match.params.id, props.token.user_id, props.token)}}>Update Task</Link>
